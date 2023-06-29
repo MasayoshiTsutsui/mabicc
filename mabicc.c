@@ -28,19 +28,34 @@ int main(int argc, char **argv) {
     // tokenize & parse
     user_input = argv[1];
     token = tokenize();
-    Node *node = expr();
+    program();
 
     // prefix of assembly
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");
     printf("main:\n");
 
-    // track ast and generate codes
-    gen(node);
+    // prologue
+    // allocate stack space for 
+    // 26 local variable
+    printf("  push rbp\n");
+    printf("  mov rbp, rsp\n");
+    printf("  sub rsp, 208\n");
 
-    // there'd be the final result on stack top
-    // load it on rax and return it
-    printf("  pop rax\n");
+    // generate code from formula one by one
+    for (int i = 0; code[i]; i++) {
+        gen(code[i]);
+
+        // there should be 1 value on stack top
+        // after executing a code line
+        printf("  pop rax\n");
+    }
+
+    // epilogue
+    // result of last formula is on RAX
+    // ret returns it
+    printf("  mov rsp, rbp\n");
+    printf("  pop rbp\n");
     printf("  ret\n");
     return 0;
 }

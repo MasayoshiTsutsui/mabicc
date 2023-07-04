@@ -51,4 +51,8 @@ assert 8 "a=3;b=5;a+b;"
 assert 3 "foo=3;"
 assert 8 "foo=3;bar=5;foo+bar;"
 
+assert 3 "return 3;"
+assert 3 "foo=3;return foo;"
+assert 8 "foo=3;bar=5;return foo+bar;"
+
 echo OK

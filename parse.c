@@ -55,6 +55,14 @@ Token *consume_ident() {
     return tmp;
 }
 
+Token *consume_ret() {
+    if (token->kind != TK_RETURN)
+        return NULL; 
+    Token *tmp = token;
+    token = token->next;
+    return tmp;
+}
+
 // if next token is expected one, read forward
 // Otherwise raise error.
 void expect(char *op) {
@@ -121,7 +129,15 @@ void program() {
 }
 
 Node *stmt() {
-    Node *node = expr();
+    Node *node;
+
+    if (consume_ret(TK_RETURN)) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_RETURN;
+        node->lhs = expr();
+    } else {
+        node = expr();
+    }
     expect(";");
     return node;
 }

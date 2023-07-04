@@ -48,5 +48,7 @@ assert 0 "1>=2;"
 assert 3 "a=3;"
 assert 8 "a=3;b=5;a+b;"
 
+assert 3 "foo=3;"
+assert 8 "foo=3;bar=5;foo+bar;"
 
 echo OK

@@ -43,6 +43,15 @@ struct Node {
     int offset;    // used when kind is ND_LVAR
 };
 
+typedef struct LVar LVar;
+
+// local variable type
+struct LVar {
+    LVar *next; // next lvar or NULL
+    char *name; // lvar name
+    int len;
+    int offset;
+};
 
 Token *tokenize();
 void program();

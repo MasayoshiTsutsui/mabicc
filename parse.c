@@ -115,7 +115,9 @@ Token *tokenize() {
         }
 
         if ('a' <= *p && *p <= 'z') {
-            cur = new_token(TK_IDENT, cur, p++, 1);
+            int strlen = strspn(p, "abcdefghijklmnopqrstuvwxyz");
+            cur = new_token(TK_IDENT, cur, p, strlen);
+            p += strlen;
             continue;
         }
 
@@ -165,7 +167,12 @@ Node *mul();
 Node *unary();
 Node *primary();
 
+LVar *find_lvar(Token *tok);
+
 Node *code[100];
+
+// local variables
+LVar *locals = NULL;
 
 void program() {
     int i = 0;
@@ -267,8 +274,30 @@ Node *primary() {
     if (tok) {
         Node *node = calloc(1, sizeof(Node));
         node->kind = ND_LVAR;
-        node->offset = (tok->str[0] - 'a' + 1) * 8;
+        LVar *lvar = find_lvar(tok);
+        if (lvar) {
+            node->offset = lvar->offset;
+        } else {
+            lvar = calloc(1, sizeof(LVar));
+            lvar->next = locals;
+            lvar->name = tok->str;
+            lvar->len = tok->len;
+            if (locals)
+                lvar->offset = locals->offset + 8;
+            else // when it's the first lvar 
+                lvar->offset = 0;
+            node->offset = lvar->offset;
+            locals = lvar;
+        }
         return node;
     }
     return new_node_num(expect_number());
+}
+
+LVar *find_lvar(Token *tok) {
+    for (LVar *var = locals; var; var = var->next) {
+        if (var->len == tok->len && !memcmp(var->name, tok->str, var->len))
+            return var;
+    }
+    return NULL;
 }

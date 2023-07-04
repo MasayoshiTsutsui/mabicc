@@ -16,6 +16,14 @@ void dbgprint(char *fmt, ...) {
 // token attended
 Token *token;
 
+void tkprint() {
+    Token *cur = token;
+    while (cur) {
+        printf("%.*s\n", cur->len, cur->str);
+        cur = cur->next;
+    }
+}
+
 // input program
 char *user_input;
 

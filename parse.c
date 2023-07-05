@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "mabicc.h"
+#include "debug.h"
 
 // token attended
 extern Token *token;
@@ -47,16 +48,8 @@ bool consume(char *op) {
     return true;
 }
 
-Token *consume_ident() {
-    if (token->kind != TK_IDENT)
-        return NULL; 
-    Token *tmp = token;
-    token = token->next;
-    return tmp;
-}
-
-Token *consume_ret() {
-    if (token->kind != TK_RETURN)
+Token *consume_tk(TokenKind tk) {
+    if (token->kind != tk)
         return NULL; 
     Token *tmp = token;
     token = token->next;
@@ -69,7 +62,7 @@ void expect(char *op) {
     if (token->kind != TK_RESERVED ||
         strlen(op) != token->len ||
         memcmp(token->str, op, token->len))
-        error_at(token->str, "It's not \"%s\"", op);
+        error_at(token->str, "It's not \"%s\" but \"%s\"", op, token->str);
     token = token->next;
 }
 
@@ -131,14 +124,26 @@ void program() {
 Node *stmt() {
     Node *node;
 
-    if (consume_ret(TK_RETURN)) {
+    if (consume_tk(TK_IF)) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_IF;
+        expect("(");
+        node->lhs = expr();
+        expect(")");
+        node->rhs = stmt();
+        if (consume_tk(TK_ELSE))
+            node->els = stmt();
+        else
+            node->els = NULL;
+    } else if (consume_tk(TK_RETURN)) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_RETURN;
         node->lhs = expr();
+        expect(";");
     } else {
         node = expr();
+        expect(";");
     }
-    expect(";");
     return node;
 }
 
@@ -224,7 +229,7 @@ Node *primary() {
         expect(")");
         return node;
     }
-    Token *tok = consume_ident();
+    Token *tok = consume_tk(TK_IDENT);
     if (tok) {
         Node *node = calloc(1, sizeof(Node));
         node->kind = ND_LVAR;

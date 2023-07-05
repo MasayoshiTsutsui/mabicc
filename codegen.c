@@ -15,8 +15,28 @@ void gen_lval(Node *node) {
     printf("  push rax\n");
 }
 
+int labelIdx = 0;
+
 void gen(Node *node) {
+    int jmplabel;
     switch (node->kind) {
+    case ND_IF:
+        jmplabel = labelIdx++;
+        gen(node->lhs);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        if (!node->els) { // when else is not used
+            printf("  je  .Lend%d\n", jmplabel);
+            gen(node->rhs);
+            printf(".Lend%d:\n", jmplabel);
+        } else {
+            printf("  je  .Lelse%d\n", jmplabel);
+            gen(node->rhs);
+            printf("  jmp  .Lend%d\n", jmplabel);
+            printf(".Lelse%d:\n", jmplabel);
+            gen(node->els);
+            printf(".Lend%d:\n", jmplabel);
+        }
     case ND_RETURN:
         gen(node->lhs);
         printf("  pop rax\n");

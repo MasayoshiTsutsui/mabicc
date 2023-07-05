@@ -55,4 +55,12 @@ assert 3 "return 3;"
 assert 3 "foo=3;return foo;"
 assert 8 "foo=3;bar=5;return foo+bar;"
 
+assert 2 "a = 0; a = 2;"
+
+assert 3 "if (1) return 1 + 2; return 4 - 2;"
+assert 1 "if (1) return 1; else return 2;"
+assert 5 "a = 0; if (a) a = 9; else a = 5; return a;"
+assert 9 "a = 1; if (a) a = 9; else a = 5; return a;"
+
+
 echo OK

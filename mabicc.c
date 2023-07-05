@@ -5,24 +5,10 @@
 #include <stdarg.h>
 #include <string.h>
 #include "mabicc.h"
-
-#define DEBUG 0
-
-void dbgprint(char *fmt, ...) {
-    if (DEBUG)
-        printf("%s", fmt);
-}
+#include "debug.h"
 
 // token attended
 Token *token;
-
-void tkprint() {
-    Token *cur = token;
-    while (cur) {
-        printf("%.*s\n", cur->len, cur->str);
-        cur = cur->next;
-    }
-}
 
 // input program
 char *user_input;

@@ -23,34 +23,34 @@ void gen(Node *node) {
     case ND_WHILE:
         jmplabel = labelIdx++;
         printf(".Lbegin%d:\n", jmplabel);
-        gen(node->lhs);
+        gen(node->ary0);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
         printf("  je  .Lend%d\n", jmplabel);
-        gen(node->rhs);
+        gen(node->ary1);
         printf("  jmp .Lbegin%d\n", jmplabel);
         printf(".Lend%d:\n", jmplabel);
         return;
     case ND_IF:
         jmplabel = labelIdx++;
-        gen(node->lhs);
+        gen(node->ary0);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        if (!node->els) { // when else is not used
+        if (!node->ary2) { // when else is not used
             printf("  je  .Lend%d\n", jmplabel);
-            gen(node->rhs);
+            gen(node->ary1);
             printf(".Lend%d:\n", jmplabel);
         } else {
             printf("  je  .Lelse%d\n", jmplabel);
-            gen(node->rhs);
+            gen(node->ary1);
             printf("  jmp .Lend%d\n", jmplabel);
             printf(".Lelse%d:\n", jmplabel);
-            gen(node->els);
+            gen(node->ary2);
             printf(".Lend%d:\n", jmplabel);
         }
         return;
     case ND_RETURN:
-        gen(node->lhs);
+        gen(node->ary0);
         printf("  pop rax\n");
         printf("  mov rsp, rbp\n");
         printf("  pop rbp\n");
@@ -66,8 +66,8 @@ void gen(Node *node) {
         printf("  push rax\n");
         return;
     case ND_ASSIGN:
-        gen_lval(node->lhs);
-        gen(node->rhs);
+        gen_lval(node->ary0);
+        gen(node->ary1);
         printf("  pop rdi\n");
         printf("  pop rax\n");
         printf("  mov [rax], rdi\n");
@@ -75,8 +75,8 @@ void gen(Node *node) {
         return;
     }
 
-    gen(node->lhs);
-    gen(node->rhs);
+    gen(node->ary0);
+    gen(node->ary1);
 
     printf("  pop rdi\n");
     printf("  pop rax\n");

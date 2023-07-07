@@ -44,9 +44,10 @@ typedef struct Node Node;
 
 struct Node {
     NodeKind kind; // type of node
-    Node *lhs;     // left subtree
-    Node *rhs;     // right subtree
-    Node *els;     // may used when kind is ND_IF
+    Node *ary0;     // left subtree
+    Node *ary1;     // right subtree
+    Node *ary2;     // may used when kind is ND_IF, ND_WHILE, ND_FOR
+    Node *ary3;     // may used when kind is ND_FOR
     int val;       // used when kind is ND_NUM
     int offset;    // used when kind is ND_LVAR
 };

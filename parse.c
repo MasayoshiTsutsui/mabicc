@@ -80,11 +80,11 @@ bool at_eof() {
     return token->kind == TK_EOF;
 }
 
-Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
+Node *new_node(NodeKind kind, Node *ary0, Node *ary1) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
-    node->lhs = lhs;
-    node->rhs = rhs;
+    node->ary0 = ary0;
+    node->ary1 = ary1;
     return node;
 }
 
@@ -128,24 +128,24 @@ Node *stmt() {
         node = calloc(1, sizeof(Node));
         node->kind = ND_WHILE;
         expect("(");
-        node->lhs = expr();
+        node->ary0 = expr();
         expect(")");
-        node->rhs = stmt();
+        node->ary1 = stmt();
     } else if (consume_tk(TK_IF)) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_IF;
         expect("(");
-        node->lhs = expr();
+        node->ary0 = expr();
         expect(")");
-        node->rhs = stmt();
+        node->ary1 = stmt();
         if (consume_tk(TK_ELSE))
-            node->els = stmt();
+            node->ary2 = stmt();
         else
-            node->els = NULL;
+            node->ary2 = NULL;
     } else if (consume_tk(TK_RETURN)) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_RETURN;
-        node->lhs = expr();
+        node->ary0 = expr();
         expect(";");
     } else {
         node = expr();

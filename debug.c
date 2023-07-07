@@ -44,13 +44,13 @@ void dfs_print(Node *node, int depth) {
         printf("%d", node->val);
     printf("\n");
 
-    if (!node->lhs)
+    if (!node->ary0)
         return;
-    dfs_print(node->lhs, depth + 1);
+    dfs_print(node->ary0, depth + 1);
 
-    if (!node->rhs)
+    if (!node->ary1)
         return;
-    dfs_print(node->rhs, depth + 1);
+    dfs_print(node->ary1, depth + 1);
 
     for (int i = 0; i < depth; i++) {
         printf("  ");

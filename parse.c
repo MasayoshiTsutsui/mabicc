@@ -123,6 +123,7 @@ void program() {
 
 Node *stmt() {
     Node *node;
+    Node *cur;
 
     if (consume_tk(TK_FOR)) {
         node = calloc(1, sizeof(Node));
@@ -172,6 +173,15 @@ Node *stmt() {
         node->kind = ND_RETURN;
         node->ary0 = expr();
         expect(";");
+    } else if (consume("{")) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_BLOCK;
+        cur = node;
+        while (!consume("}")) {
+            cur->next = stmt();
+            cur = cur->next;
+        }
+        cur->next = NULL;
     } else {
         node = expr();
         expect(";");

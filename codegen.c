@@ -75,6 +75,13 @@ void gen(Node *node) {
         printf("  pop rbp\n");
         printf("  ret\n");
         return;
+    case ND_BLOCK:
+        while (node->next) {
+            gen(node->next);
+            printf("  pop rax\n");
+            node = node->next;
+        }
+        return;
     case ND_NUM:
         printf("  push %d\n", node->val);
         return;

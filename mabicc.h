@@ -40,6 +40,7 @@ typedef enum {
     ND_IF,     // if
     ND_WHILE,  // while
     ND_FOR,    // for
+    ND_BLOCK,  // block {}
 } NodeKind;
 
 typedef struct Node Node;
@@ -52,6 +53,7 @@ struct Node {
     Node *ary3;     // may used when kind is ND_FOR
     int val;       // used when kind is ND_NUM
     int offset;    // used when kind is ND_LVAR
+    Node *next;    // used when kind is ND_BLOCK
 };
 
 typedef struct LVar LVar;

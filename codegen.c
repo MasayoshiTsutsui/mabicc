@@ -20,6 +20,17 @@ int labelIdx = 0;
 void gen(Node *node) {
     int jmplabel;
     switch (node->kind) {
+    case ND_WHILE:
+        jmplabel = labelIdx++;
+        printf(".Lbegin%d:\n", jmplabel);
+        gen(node->lhs);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je  .Lend%d\n", jmplabel);
+        gen(node->rhs);
+        printf("  jmp .Lbegin%d\n", jmplabel);
+        printf(".Lend%d:\n", jmplabel);
+        return;
     case ND_IF:
         jmplabel = labelIdx++;
         gen(node->lhs);
@@ -32,11 +43,12 @@ void gen(Node *node) {
         } else {
             printf("  je  .Lelse%d\n", jmplabel);
             gen(node->rhs);
-            printf("  jmp  .Lend%d\n", jmplabel);
+            printf("  jmp .Lend%d\n", jmplabel);
             printf(".Lelse%d:\n", jmplabel);
             gen(node->els);
             printf(".Lend%d:\n", jmplabel);
         }
+        return;
     case ND_RETURN:
         gen(node->lhs);
         printf("  pop rax\n");

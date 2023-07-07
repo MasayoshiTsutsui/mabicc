@@ -124,7 +124,18 @@ void program() {
 Node *stmt() {
     Node *node;
 
-    if (consume_tk(TK_WHILE)) {
+    if (consume_tk(TK_FOR)) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_FOR;
+        expect("(");
+        node->ary0 = expr();
+        expect(";");
+        node->ary1 = expr();
+        expect(";");
+        node->ary2 = expr();
+        expect(")");
+        node->ary3 = stmt();
+    } else if (consume_tk(TK_WHILE)) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_WHILE;
         expect("(");

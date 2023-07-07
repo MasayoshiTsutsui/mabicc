@@ -20,6 +20,19 @@ int labelIdx = 0;
 void gen(Node *node) {
     int jmplabel;
     switch (node->kind) {
+    case ND_FOR:
+        jmplabel = labelIdx++;
+        gen(node->ary0);
+        printf(".Lbegin%d:\n", jmplabel);
+        gen(node->ary1); // eval condition
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je  .Lend%d\n", jmplabel);
+        gen(node->ary3); // execute inside loop
+        gen(node->ary2); // execute *** -> for(;;***)
+        printf("  jmp .Lbegin%d\n", jmplabel);
+        printf(".Lend%d:\n", jmplabel);
+        return;
     case ND_WHILE:
         jmplabel = labelIdx++;
         printf(".Lbegin%d:\n", jmplabel);

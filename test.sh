@@ -63,6 +63,7 @@ assert 5 "a = 0; if (a) a = 9; else a = 5; return a;"
 assert 9 "a = 1; if (a) a = 9; else a = 5; return a;"
 
 assert 3 "a = 0; while (a < 3) a = a + 1; return a;"
+assert 3 "a = 0; for (i = 0; i < 3; i = i + 1) a = a + 1; return a;"
 
 
 echo OK

@@ -22,14 +22,20 @@ void gen(Node *node) {
     switch (node->kind) {
     case ND_FOR:
         jmplabel = labelIdx++;
-        gen(node->ary0);
+        if (node->ary0)
+            gen(node->ary0);
         printf(".Lbegin%d:\n", jmplabel);
-        gen(node->ary1); // eval condition
+        if (node->ary1)
+            gen(node->ary1); // eval condition
+        else
+            printf("  push 1\n");
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
         printf("  je  .Lend%d\n", jmplabel);
-        gen(node->ary3); // execute inside loop
-        gen(node->ary2); // execute *** -> for(;;***)
+        if (node->ary3)
+            gen(node->ary3); // execute inside loop
+        if (node->ary2)
+            gen(node->ary2); // execute *** -> for(;;***)
         printf("  jmp .Lbegin%d\n", jmplabel);
         printf(".Lend%d:\n", jmplabel);
         return;

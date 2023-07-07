@@ -128,12 +128,26 @@ Node *stmt() {
         node = calloc(1, sizeof(Node));
         node->kind = ND_FOR;
         expect("(");
-        node->ary0 = expr();
-        expect(";");
-        node->ary1 = expr();
-        expect(";");
-        node->ary2 = expr();
-        expect(")");
+        if (!consume(";")) {
+            node->ary0 = expr();
+            expect(";");
+        }
+        else // if 0th ary is empty: for (;*;*)
+            node->ary0 = NULL;
+
+        if (!consume(";")) {
+            node->ary1 = expr();
+            expect(";");
+        }
+        else // if 1st ary is empty: for (*;;*)
+            node->ary1 = NULL;
+
+        if (!consume(")")) {
+            node->ary2 = expr();
+            expect(")");
+        }
+        else // if 2nd ary is empty: for (*;*;)
+            node->ary2 = NULL;
         node->ary3 = stmt();
     } else if (consume_tk(TK_WHILE)) {
         node = calloc(1, sizeof(Node));

@@ -4,8 +4,8 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <string.h>
-#include "mabicc.h"
-#include "debug.h"
+#include "mabicc.hpp"
+#include "debug.hpp"
 
 // token attended
 extern Token *token;
@@ -15,7 +15,7 @@ extern char *user_input;
 
 // func for reporting errors
 // same ary as printf
-void error(char *fmt, ...) {
+void error(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
@@ -23,7 +23,7 @@ void error(char *fmt, ...) {
     exit(1);
 }
 
-void error_at(char *loc, char *fmt, ...) {
+void error_at(char *loc, const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
 
@@ -39,7 +39,7 @@ void error_at(char *loc, char *fmt, ...) {
 
 // if next token is expected one, read forward
 // and return True. Otherwise False.
-bool consume(char *op) {
+bool consume(const char *op) {
     if (token->kind != TK_RESERVED ||
         strlen(op) != token->len ||
         memcmp(token->str, op, token->len))
@@ -58,7 +58,7 @@ Token *consume_tk(TokenKind tk) {
 
 // if next token is expected one, read forward
 // Otherwise raise error.
-void expect(char *op) {
+void expect(const char *op) {
     if (token->kind != TK_RESERVED ||
         strlen(op) != token->len ||
         memcmp(token->str, op, token->len))
@@ -81,7 +81,7 @@ bool at_eof() {
 }
 
 Node *new_node(NodeKind kind, Node *ary0, Node *ary1) {
-    Node *node = calloc(1, sizeof(Node));
+    Node *node = (Node*)calloc(1, sizeof(Node));
     node->kind = kind;
     node->ary0 = ary0;
     node->ary1 = ary1;
@@ -89,7 +89,7 @@ Node *new_node(NodeKind kind, Node *ary0, Node *ary1) {
 }
 
 Node *new_node_num(int val) {
-    Node *node = calloc(1, sizeof(Node));
+    Node *node = (Node*)calloc(1, sizeof(Node));
     node->kind = ND_NUM;
     node->val = val;
     return node;
@@ -126,7 +126,7 @@ Node *stmt() {
     Node *cur;
 
     if (consume_tk(TK_FOR)) {
-        node = calloc(1, sizeof(Node));
+        node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_FOR;
         expect("(");
         if (!consume(";")) {
@@ -151,14 +151,14 @@ Node *stmt() {
             node->ary2 = NULL;
         node->ary3 = stmt();
     } else if (consume_tk(TK_WHILE)) {
-        node = calloc(1, sizeof(Node));
+        node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_WHILE;
         expect("(");
         node->ary0 = expr();
         expect(")");
         node->ary1 = stmt();
     } else if (consume_tk(TK_IF)) {
-        node = calloc(1, sizeof(Node));
+        node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_IF;
         expect("(");
         node->ary0 = expr();
@@ -169,12 +169,12 @@ Node *stmt() {
         else
             node->ary2 = NULL;
     } else if (consume_tk(TK_RETURN)) {
-        node = calloc(1, sizeof(Node));
+        node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_RETURN;
         node->ary0 = expr();
         expect(";");
     } else if (consume("{")) {
-        node = calloc(1, sizeof(Node));
+        node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_BLOCK;
         cur = node;
         while (!consume("}")) {
@@ -273,13 +273,13 @@ Node *primary() {
     }
     Token *tok = consume_tk(TK_IDENT);
     if (tok) {
-        Node *node = calloc(1, sizeof(Node));
+        Node *node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_LVAR;
         LVar *lvar = find_lvar(tok);
         if (lvar) {
             node->offset = lvar->offset;
         } else {
-            lvar = calloc(1, sizeof(LVar));
+            lvar = (LVar*)calloc(1, sizeof(LVar));
             lvar->next = locals;
             lvar->name = tok->str;
             lvar->len = tok->len;

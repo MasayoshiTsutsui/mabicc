@@ -2,14 +2,14 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
-#include "mabicc.h"
+#include "mabicc.hpp"
 
 // input program
 extern char *user_input;
 
 // make new token and chain it to 'cur'.
 Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
-    Token *tok = calloc(1, sizeof(Token));
+    Token *tok = (Token*)calloc(1, sizeof(Token));
     tok->kind = kind;
     tok->str = str;
     tok->len = len;
@@ -17,7 +17,7 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
     return tok;
 }
 
-bool startswith(char *p, char *q) {
+bool startswith(const char *p, const char *q) {
     return memcmp(p, q, strlen(q)) == 0;
 }
 

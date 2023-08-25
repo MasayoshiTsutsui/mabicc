@@ -4,8 +4,8 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <string.h>
-#include "mabicc.h"
-#include "debug.h"
+#include "mabicc.hpp"
+#include "debug.hpp"
 
 // token attended
 Token *token;

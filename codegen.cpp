@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <string.h>
-#include "mabicc.h"
+#include "mabicc.hpp"
 
 void gen_lval(Node *node) {
     if (node->kind != ND_LVAR)

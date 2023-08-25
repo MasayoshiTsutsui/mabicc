@@ -70,5 +70,5 @@ Token *tokenize();
 void program();
 extern Node *code[];
 void gen(Node *node);
-void error(char *fmt, ...);
-void error_at(char *loc, char *fmt, ...);
+void error(const char *fmt, ...);
+void error_at(char *loc, const char *fmt, ...);

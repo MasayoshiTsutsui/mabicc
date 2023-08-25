@@ -1,11 +1,11 @@
-CFLAGS=-std=c11 -g -static
-SRCS=$(wildcard *.c)
-OBJS=$(SRCS:.c=.o)
+CXXFLAGS=-std=c++11 -g -static
+SRCS=$(wildcard *.cpp)
+OBJS=$(SRCS:.cpp=.o)
 
 mabicc: $(OBJS)
 	$(CC) -o mabicc $(OBJS) $(LDFLAGS)
 
-$(OBJS): mabicc.h
+$(OBJS): mabicc.hpp
 
 test: mabicc
 	./test.sh

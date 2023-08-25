@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "mabicc.h"
+#include "mabicc.hpp"
 #define DEBUG 0
 
 void dbgprint(char *fmt, ...) {
@@ -16,7 +16,7 @@ void tkprint() {
     }
 }
 
-char *getNodeName(NodeKind nk) {
+const char *getNodeName(NodeKind nk) {
     switch (nk) {
         case ND_ADD: return "ADD";
         case ND_SUB: return "SUB";
@@ -31,7 +31,7 @@ char *getNodeName(NodeKind nk) {
         case ND_NUM: return "NUM";
         case ND_RETURN: return "RETURN";
         case ND_IF: return "IF";
-        default: break;
+        default: return NULL;
     }
 }
 

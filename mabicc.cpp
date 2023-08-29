@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <string.h>
+#include <iostream>
 #include "mabicc.hpp"
 #include "debug.hpp"
 
@@ -25,16 +26,16 @@ int main(int argc, char **argv) {
     program();
 
     // prefix of assembly
-    printf(".intel_syntax noprefix\n");
-    printf(".global main\n");
-    printf("main:\n");
+    std::cout << ".intel_syntax noprefix" << std::endl;
+    std::cout << ".global main" << std::endl;
+    std::cout << "main:" << std::endl;
 
     // prologue
     // allocate stack space for 
     // 26 local variable
-    printf("  push rbp\n");
-    printf("  mov rbp, rsp\n");
-    printf("  sub rsp, 208\n");
+    std::cout << "  push rbp" << std::endl;
+    std::cout << "  mov rbp, rsp" << std::endl;
+    std::cout << "  sub rsp, 208" << std::endl;
 
     // generate code from formula one by one
     for (int i = 0; code[i]; i++) {
@@ -42,14 +43,14 @@ int main(int argc, char **argv) {
 
         // there should be 1 value on stack top
         // after executing a code line
-        printf("  pop rax\n");
+        std::cout << "  pop rax" << std::endl;
     }
 
     // epilogue
     // result of last formula is on RAX
     // ret returns it
-    printf("  mov rsp, rbp\n");
-    printf("  pop rbp\n");
-    printf("  ret\n");
+    std::cout << "  mov rsp, rbp" << std::endl;
+    std::cout << "  pop rbp" << std::endl;
+    std::cout << "  ret" << std::endl;
     return 0;
 }

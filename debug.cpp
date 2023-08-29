@@ -1,18 +1,19 @@
 #include <stdio.h>
 #include <string>
+#include <iostream>
 #include "mabicc.hpp"
 #define DEBUG 0
 
 void dbgprint(char *fmt, ...) {
     if (DEBUG)
-        printf("%s", fmt);
+        std::cout << fmt << std::endl;
 }
 
 void tkprint() {
     extern Token *token;
     Token *cur = token;
     while (cur) {
-        printf("%.*s\n", cur->len, cur->str);
+        std::cout << std::string(cur->str, cur->len) << std::endl;
         cur = cur->next;
     }
 }
@@ -38,12 +39,12 @@ std::string getNodeName(NodeKind nk) {
 
 void dfs_print(Node *node, int depth) {
     for (int i = 0; i < depth; i++) {
-        printf("  ");
+        std::cout << "  ";
     }
-    printf("%s ", getNodeName(node->kind).c_str());
+    std::cout << getNodeName(node->kind) << " ";
     if (node->kind == ND_NUM)
-        printf("%d", node->val);
-    printf("\n");
+        std::cout << node->val;
+    std::cout << std::endl;
 
     if (!node->ary0)
         return;
@@ -54,13 +55,13 @@ void dfs_print(Node *node, int depth) {
     dfs_print(node->ary1, depth + 1);
 
     for (int i = 0; i < depth; i++) {
-        printf("  ");
+        std::cout << "  ";
     }
-    printf("\n");
+    std::cout << std::endl;
 }
 
 void ndprint() {
-    printf("\nNODE TREE::\n\n");
+    std::cout << std::endl << "NODE TREE::" << std::endl << std::endl;
     for (int i = 0; code[i]; i++) {
         dfs_print(code[i], 0);
     }

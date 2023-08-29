@@ -1,4 +1,4 @@
-CXXFLAGS=-std=c++11 -g -static
+CXXFLAGS=-std=c++14 -g -static
 SRCS=$(wildcard *.cpp)
 OBJS=$(SRCS:.cpp=.o)
 

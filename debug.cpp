@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string>
 #include "mabicc.hpp"
 #define DEBUG 0
 
@@ -16,7 +17,7 @@ void tkprint() {
     }
 }
 
-const char *getNodeName(NodeKind nk) {
+std::string getNodeName(NodeKind nk) {
     switch (nk) {
         case ND_ADD: return "ADD";
         case ND_SUB: return "SUB";
@@ -39,7 +40,7 @@ void dfs_print(Node *node, int depth) {
     for (int i = 0; i < depth; i++) {
         printf("  ");
     }
-    printf("%s ", getNodeName(node->kind));
+    printf("%s ", getNodeName(node->kind).c_str());
     if (node->kind == ND_NUM)
         printf("%d", node->val);
     printf("\n");

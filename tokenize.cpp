@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
+#include <string>
 #include "mabicc.hpp"
 
 // input program
@@ -17,8 +18,8 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
     return tok;
 }
 
-bool startswith(const char *p, const char *q) {
-    return memcmp(p, q, strlen(q)) == 0;
+bool startswith(std::string p, std::string q) {
+    return std::equal(q.begin(), q.end(), p.begin());
 }
 
 int is_alnum(char c) {

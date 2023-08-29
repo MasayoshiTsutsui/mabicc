@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <string.h>
+#include <string>
 #include "mabicc.hpp"
 #include "debug.hpp"
 
@@ -39,10 +40,10 @@ void error_at(char *loc, const char *fmt, ...) {
 
 // if next token is expected one, read forward
 // and return True. Otherwise False.
-bool consume(const char *op) {
+bool consume(std::string op) {
     if (token->kind != TK_RESERVED ||
-        strlen(op) != token->len ||
-        memcmp(token->str, op, token->len))
+        op.size() != token->len ||
+        !std::equal(op.begin(), op.end(), token->str))
         return false;
     token = token->next;
     return true;
@@ -58,10 +59,10 @@ Token *consume_tk(TokenKind tk) {
 
 // if next token is expected one, read forward
 // Otherwise raise error.
-void expect(const char *op) {
+void expect(std::string op) {
     if (token->kind != TK_RESERVED ||
-        strlen(op) != token->len ||
-        memcmp(token->str, op, token->len))
+        op.size() != token->len ||
+        !std::equal(op.begin(), op.end(), token->str))
         error_at(token->str, "It's not \"%s\" but \"%s\"", op, token->str);
     token = token->next;
 }

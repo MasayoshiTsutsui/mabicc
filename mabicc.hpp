@@ -67,7 +67,7 @@ struct LVar {
 };
 
 Token *tokenize();
-void program();
+void program(Token* &token);
 extern Node *code[];
 void gen(Node *node);
 void error(const char *fmt, ...);

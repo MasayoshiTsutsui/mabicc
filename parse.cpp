@@ -8,9 +8,6 @@
 #include "mabicc.hpp"
 #include "debug.hpp"
 
-// token attended
-extern Token *token;
-
 // input program
 extern char *user_input;
 
@@ -40,7 +37,7 @@ void error_at(char *loc, const char *fmt, ...) {
 
 // if next token is expected one, read forward
 // and return True. Otherwise False.
-bool consume(std::string op) {
+bool consume(Token* &token, std::string op) {
     if (token->kind != TK_RESERVED ||
         op.size() != token->len ||
         !std::equal(op.begin(), op.end(), token->str))
@@ -49,7 +46,7 @@ bool consume(std::string op) {
     return true;
 }
 
-Token *consume_tk(TokenKind tk) {
+Token *consume_tk(Token* &token, TokenKind tk) {
     if (token->kind != tk)
         return NULL; 
     Token *tmp = token;
@@ -59,7 +56,7 @@ Token *consume_tk(TokenKind tk) {
 
 // if next token is expected one, read forward
 // Otherwise raise error.
-void expect(std::string op) {
+void expect(Token* &token, std::string op) {
     if (token->kind != TK_RESERVED ||
         op.size() != token->len ||
         !std::equal(op.begin(), op.end(), token->str))
@@ -69,7 +66,7 @@ void expect(std::string op) {
 
 // if next token is number, read forward and return the number.
 // Otherwise, raise error.
-int expect_number() {
+int expect_number(Token* &token) {
     if (token->kind != TK_NUM)
         error_at(token->str, "It's not a number.");
     int val = token->val;
@@ -77,7 +74,7 @@ int expect_number() {
     return val;
 }
 
-bool at_eof() {
+bool at_eof(Token* &token) {
     return token->kind == TK_EOF;
 }
 
@@ -96,16 +93,16 @@ Node *new_node_num(int val) {
     return node;
 }
 
-void program();
-Node *stmt();
-Node *expr();
-Node *assign();
-Node *equality();
-Node *relational();
-Node *add();
-Node *mul();
-Node *unary();
-Node *primary();
+void program(Token* &token);
+Node *stmt(Token* &token);
+Node *expr(Token* &token);
+Node *assign(Token* &token);
+Node *equality(Token* &token);
+Node *relational(Token* &token);
+Node *add(Token* &token);
+Node *mul(Token* &token);
+Node *unary(Token* &token);
+Node *primary(Token* &token);
 
 LVar *find_lvar(Token *tok);
 
@@ -114,165 +111,165 @@ Node *code[100];
 // local variables
 LVar *locals = NULL;
 
-void program() {
+void program(Token* &token) {
     int i = 0;
-    while(!at_eof()) {
-        code[i++] = stmt();
+    while(!at_eof(token)) {
+        code[i++] = stmt(token);
     }
     code[i] = NULL;
 }
 
-Node *stmt() {
+Node *stmt(Token* &token) {
     Node *node;
     Node *cur;
 
-    if (consume_tk(TK_FOR)) {
+    if (consume_tk(token, TK_FOR)) {
         node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_FOR;
-        expect("(");
-        if (!consume(";")) {
-            node->ary0 = expr();
-            expect(";");
+        expect(token, "(");
+        if (!consume(token, ";")) {
+            node->ary0 = expr(token);
+            expect(token, ";");
         }
         else // if 0th ary is empty: for (;*;*)
             node->ary0 = NULL;
 
-        if (!consume(";")) {
-            node->ary1 = expr();
-            expect(";");
+        if (!consume(token, ";")) {
+            node->ary1 = expr(token);
+            expect(token, ";");
         }
         else // if 1st ary is empty: for (*;;*)
             node->ary1 = NULL;
 
-        if (!consume(")")) {
-            node->ary2 = expr();
-            expect(")");
+        if (!consume(token, ")")) {
+            node->ary2 = expr(token);
+            expect(token, ")");
         }
         else // if 2nd ary is empty: for (*;*;)
             node->ary2 = NULL;
-        node->ary3 = stmt();
-    } else if (consume_tk(TK_WHILE)) {
+        node->ary3 = stmt(token);
+    } else if (consume_tk(token, TK_WHILE)) {
         node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_WHILE;
-        expect("(");
-        node->ary0 = expr();
-        expect(")");
-        node->ary1 = stmt();
-    } else if (consume_tk(TK_IF)) {
+        expect(token, "(");
+        node->ary0 = expr(token);
+        expect(token, ")");
+        node->ary1 = stmt(token);
+    } else if (consume_tk(token, TK_IF)) {
         node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_IF;
-        expect("(");
-        node->ary0 = expr();
-        expect(")");
-        node->ary1 = stmt();
-        if (consume_tk(TK_ELSE))
-            node->ary2 = stmt();
+        expect(token, "(");
+        node->ary0 = expr(token);
+        expect(token, ")");
+        node->ary1 = stmt(token);
+        if (consume_tk(token, TK_ELSE))
+            node->ary2 = stmt(token);
         else
             node->ary2 = NULL;
-    } else if (consume_tk(TK_RETURN)) {
+    } else if (consume_tk(token, TK_RETURN)) {
         node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_RETURN;
-        node->ary0 = expr();
-        expect(";");
-    } else if (consume("{")) {
+        node->ary0 = expr(token);
+        expect(token, ";");
+    } else if (consume(token, "{")) {
         node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_BLOCK;
         cur = node;
-        while (!consume("}")) {
-            cur->next = stmt();
+        while (!consume(token, "}")) {
+            cur->next = stmt(token);
             cur = cur->next;
         }
         cur->next = NULL;
     } else {
-        node = expr();
-        expect(";");
+        node = expr(token);
+        expect(token, ";");
     }
     return node;
 }
 
-Node *expr() {
-    return assign();
+Node *expr(Token* &token) {
+    return assign(token);
 }
 
-Node *assign() {
-    Node *node = equality();
+Node *assign(Token* &token) {
+    Node *node = equality(token);
 
-    if (consume("="))
-        node = new_node(ND_ASSIGN, node, assign());
+    if (consume(token, "="))
+        node = new_node(ND_ASSIGN, node, assign(token));
     return node;
 }
 
-Node *equality() {
-    Node *node = relational();
+Node *equality(Token* &token) {
+    Node *node = relational(token);
 
     for (;;) {
-        if (consume("=="))
-            node = new_node(ND_EQ, node, relational());
-        else if (consume("!="))
-            node = new_node(ND_NE, node, relational());
+        if (consume(token, "=="))
+            node = new_node(ND_EQ, node, relational(token));
+        else if (consume(token, "!="))
+            node = new_node(ND_NE, node, relational(token));
         else
             return node;
     }
 }
 
-Node *relational() {
-    Node *node = add();
+Node *relational(Token* &token) {
+    Node *node = add(token);
 
     for (;;) {
-        if (consume("<"))
-            node = new_node(ND_LT, node, add());
-        else if (consume("<="))
-            node = new_node(ND_LE, node, add());
-        else if (consume(">"))
-            node = new_node(ND_LT, add(), node);
-        else if (consume(">="))
-            node = new_node(ND_LE, add(), node);
+        if (consume(token, "<"))
+            node = new_node(ND_LT, node, add(token));
+        else if (consume(token, "<="))
+            node = new_node(ND_LE, node, add(token));
+        else if (consume(token, ">"))
+            node = new_node(ND_LT, add(token), node);
+        else if (consume(token, ">="))
+            node = new_node(ND_LE, add(token), node);
         return node;
     }
 }
 
-Node *add() {
-    Node *node = mul();
+Node *add(Token* &token) {
+    Node *node = mul(token);
     
     for (;;) {
-        if (consume("+"))
-            node = new_node(ND_ADD, node, mul());
-        else if (consume("-"))
-            node = new_node(ND_SUB, node, mul());
+        if (consume(token, "+"))
+            node = new_node(ND_ADD, node, mul(token));
+        else if (consume(token, "-"))
+            node = new_node(ND_SUB, node, mul(token));
         else
             return node;
     }
 }
 
-Node *mul() {
-    Node *node = unary();
+Node *mul(Token* &token) {
+    Node *node = unary(token);
 
     for (;;) {
-        if (consume("*"))
-            node = new_node(ND_MUL, node, unary());
-        else if (consume("/"))
-            node = new_node(ND_DIV, node, unary());
+        if (consume(token, "*"))
+            node = new_node(ND_MUL, node, unary(token));
+        else if (consume(token, "/"))
+            node = new_node(ND_DIV, node, unary(token));
         else
             return node;
     }
 }
 
-Node *unary() {
-    if (consume("+"))
-        return unary();
-    if (consume("-"))
-        return new_node(ND_SUB, new_node_num(0), unary());
-    return primary();
+Node *unary(Token* &token) {
+    if (consume(token, "+"))
+        return unary(token);
+    if (consume(token, "-"))
+        return new_node(ND_SUB, new_node_num(0), unary(token));
+    return primary(token);
 }
 
-Node *primary() {
+Node *primary(Token* &token) {
     // if next token is '(', there should be '(' expr ')'
-    if (consume("(")) {
-        Node *node = expr();
-        expect(")");
+    if (consume(token, "(")) {
+        Node *node = expr(token);
+        expect(token, ")");
         return node;
     }
-    Token *tok = consume_tk(TK_IDENT);
+    Token *tok = consume_tk(token, TK_IDENT);
     if (tok) {
         Node *node = (Node*)calloc(1, sizeof(Node));
         node->kind = ND_LVAR;
@@ -293,7 +290,7 @@ Node *primary() {
         }
         return node;
     }
-    return new_node_num(expect_number());
+    return new_node_num(expect_number(token));
 }
 
 LVar *find_lvar(Token *tok) {

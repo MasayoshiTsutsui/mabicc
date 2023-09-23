@@ -9,8 +9,7 @@ void dbgprint(char *fmt, ...) {
         std::cout << fmt << std::endl;
 }
 
-void tkprint() {
-    extern Token *token;
+void tkprint(Token *token) {
     Token *cur = token;
     while (cur) {
         std::cout << std::string(cur->str, cur->len) << std::endl;

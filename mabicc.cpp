@@ -8,8 +8,6 @@
 #include "mabicc.hpp"
 #include "debug.hpp"
 
-// token attended
-Token *token;
 
 // input program
 char *user_input;
@@ -22,8 +20,8 @@ int main(int argc, char **argv) {
 
     // tokenize & parse
     user_input = argv[1];
-    token = tokenize();
-    program();
+    Token* token = tokenize();
+    program(token);
 
     // prefix of assembly
     std::cout << ".intel_syntax noprefix" << std::endl;

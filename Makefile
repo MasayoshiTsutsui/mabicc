@@ -3,7 +3,7 @@ SRCS=$(wildcard *.cpp)
 OBJS=$(SRCS:.cpp=.o)
 
 mabicc: $(OBJS)
-	$(CC) -o mabicc $(OBJS) $(LDFLAGS)
+	$(CXX) -o mabicc $(OBJS) $(LDFLAGS)
 
 $(OBJS): mabicc.hpp
 

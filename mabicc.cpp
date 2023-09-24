@@ -9,8 +9,6 @@
 #include "debug.hpp"
 
 
-// input program
-char *user_input;
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -19,8 +17,8 @@ int main(int argc, char **argv) {
     }
 
     // tokenize & parse
-    user_input = argv[1];
-    Token* token = tokenize();
+    const std::string user_input = argv[1];
+    Token* token = tokenize(user_input);
     program(token);
 
     // prefix of assembly

@@ -66,7 +66,7 @@ struct LVar {
     int offset;
 };
 
-Token *tokenize();
+Token *tokenize(const std::string &user_input);
 void program(Token* &token);
 extern Node *code[];
 void gen(Node *node);

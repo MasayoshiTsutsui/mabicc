@@ -5,11 +5,10 @@
 #include <stdarg.h>
 #include <string.h>
 #include <string>
+#include <iostream>
 #include "mabicc.hpp"
 #include "debug.hpp"
 
-// input program
-extern char *user_input;
 
 // func for reporting errors
 // same ary as printf
@@ -21,19 +20,19 @@ void error(const char *fmt, ...) {
     exit(1);
 }
 
-void error_at(char *loc, const char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
+//void error_at(const std::string::const_iterator loc, const char *fmt, ...) {
+    //va_list ap;
+    //va_start(ap, fmt);
 
-    int pos = loc - user_input;
-    fprintf(stderr, "%s\n", user_input);
-    if (pos > 0)
-        fprintf(stderr, "%*s", pos, " ");
-    fprintf(stderr, "^ ");
-    vfprintf(stderr, fmt, ap);
-    fprintf(stderr, "\n");
-    exit(1);
-}
+    //int pos = std::distance(user_input, loc);
+    //fprintf(stderr, "%s\n", user_input);
+    //if (pos > 0)
+        //fprintf(stderr, "%*s", pos, " ");
+    //fprintf(stderr, "^ ");
+    //vfprintf(stderr, fmt, ap);
+    //fprintf(stderr, "\n");
+    //exit(1);
+//}
 
 // if next token is expected one, read forward
 // and return True. Otherwise False.
@@ -60,15 +59,19 @@ void expect(Token* &token, std::string op) {
     if (token->kind != TK_RESERVED ||
         op.size() != token->len ||
         !std::equal(op.begin(), op.end(), token->str))
-        error_at(token->str, "It's not \"%s\" but \"%s\"", op, token->str);
+        std::cout << "It's not " << op << " but " << std::string(token->str, token->len) << std::endl;
+        //error_at(token->str, "It's not \"%s\" but \"%s\"", op, token->str);
     token = token->next;
 }
 
 // if next token is number, read forward and return the number.
 // Otherwise, raise error.
 int expect_number(Token* &token) {
-    if (token->kind != TK_NUM)
-        error_at(token->str, "It's not a number.");
+    if (token->kind != TK_NUM) {
+        //error_at(token->str, "It's not a number.");
+        std::cout << "It's not a number." << std::endl;
+        exit(1);
+    }
     int val = token->val;
     token = token->next;
     return val;
